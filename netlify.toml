@@ -1,0 +1,4 @@
+[[redirects]]
+  from = "/api"
+  to = "https://my-x402-backend-api.netlify.app/.netlify/functions/resource"
+  status = 200
