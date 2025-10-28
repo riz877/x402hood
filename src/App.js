@@ -561,7 +561,7 @@ function App() {
           
           <s.SpacerMedium />
           <s.SocialsContainer>
-            <StyledLink href="#" target="_blank">
+            <StyledLink href="https://x.com/sanukek" target="_blank">
               X
             </StyledLink>
           </s.SocialsContainer>
