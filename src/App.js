@@ -151,7 +151,7 @@ function App() {
   // =================================================================
   // ===  ===
   // =================================================================
-  const API_URL = "/mint";
+  const API_URL = "/api/v1";
 
   const handleApiClick = async () => {
     setFeedback("Contacting API..."); // 
