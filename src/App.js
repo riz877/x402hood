@@ -4,38 +4,43 @@ import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
 import styled from "styled-components";
+import { ethers } from "ethers";
 
 const truncate = (input, len) =>
   input.length > len ? `${input.substring(0, len)}...` : input;
 
+// --- DEFINISI STYLE COMPONENTS (LENGKAP) ---
 export const StyledButton = styled.button`
   padding: 10px;
-  border-radius: 50px;
-  border: none;
+  border-radius: 4px; 
+  border: 2px solid #000; 
   background-color: var(--secondary);
   padding: 10px;
   font-weight: bold;
+  font-family: "coder", "Courier New", Courier, monospace;
   color: var(--secondary-text);
-  width: 100px;
+  width: 150px;
   cursor: pointer;
-  box-shadow: 0px 6px 0px -2px rgba(250, 250, 250, 0.3);
-  -webkit-box-shadow: 0px 6px 0px -2px rgba(250, 250, 250, 0.3);
-  -moz-box-shadow: 0px 6px 0px -2px rgba(250, 250, 250, 0.3);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.4);
   :active {
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+    transform: translate(4px, 4px);
   }
 `;
 
 export const StyledRoundButton = styled.button`
   padding: 10px;
-  border-radius: 100%;
-  border: none;
+  border-radius: 4px; 
+  border: 2px solid #000; 
   background-color: var(--primary);
   padding: 10px;
   font-weight: bold;
   font-size: 15px;
+  font-family: "coder", "Courier New", Courier, monospace;
   color: var(--primary-text);
   width: 30px;
   height: 30px;
@@ -43,13 +48,14 @@ export const StyledRoundButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
-  -webkit-box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
-  -moz-box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.4);
   :active {
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+    transform: translate(2px, 2px);
   }
 `;
 
@@ -75,10 +81,10 @@ export const StyledLogo = styled.img`
 `;
 
 export const StyledImg = styled.img`
-  box-shadow: 0px 5px 11px 2px rgba(0, 0, 0, 0.7);
-  border: 4px dashed var(--secondary);
+  box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.4);
+  border: 4px solid var(--secondary);
   background-color: var(--accent);
-  border-radius: 100%;
+  border-radius: 4px; 
   width: 200px;
   @media (min-width: 900px) {
     width: 250px;
@@ -92,17 +98,39 @@ export const StyledImg = styled.img`
 export const StyledLink = styled.a`
   color: var(--secondary);
   text-decoration: none;
+  text-shadow: 0 0 5px var(--secondary);
+  &:hover {
+    text-decoration: underline;
+    color: #8aff8a;
+  }
 `;
+
+const GlitchTitle = styled(s.TextTitle)`
+  animation: glitch 0.4s 2s infinite steps(1);
+`;
+
+const FlickerText = styled(s.TextDescription)`
+  animation: flicker 2s infinite steps(1) alternate;
+`;
+// --- AKHIR DEFINISI STYLE COMPONENTS ---
+
 
 function App() {
   const dispatch = useDispatch();
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
   const [claimingNft, setClaimingNft] = useState(false);
-  const [feedback, setFeedback] = useState(`Click buy to mint your NFT.`);
+  const [isApproving, setIsApproving] = useState(false); 
+  const [approvalStatus, setApprovalStatus] = useState(false); 
+  const [feedback, setFeedback] = useState(`First, approve USDC to mint.`); 
   const [mintAmount, setMintAmount] = useState(1);
+  
+  const [usdcAbi, setUsdcAbi] = useState(null);
+  const [nftAbi, setNftAbi] = useState(null);
+
   const [CONFIG, SET_CONFIG] = useState({
     CONTRACT_ADDRESS: "",
+    USDC_CONTRACT_ADDRESS: "", 
     SCAN_LINK: "",
     NETWORK: {
       NAME: "",
@@ -120,56 +148,119 @@ function App() {
     SHOW_BACKGROUND: false,
   });
 
-  const claimNFTs = () => {
-    let cost = CONFIG.WEI_COST;
-    let gasLimit = CONFIG.GAS_LIMIT;
-    let totalCostWei = String(cost * mintAmount);
-    let totalGasLimit = String(gasLimit * mintAmount);
-    console.log("Cost: ", totalCostWei);
-    console.log("Gas limit: ", totalGasLimit);
-    setFeedback(`Minting your ${CONFIG.NFT_NAME}...`);
-    setClaimingNft(true);
-    blockchain.smartContract.methods
-      .mint(blockchain.account, mintAmount)
-      .send({
-        gasLimit: String(totalGasLimit),
-        to: CONFIG.CONTRACT_ADDRESS,
-        from: blockchain.account,
-        value: totalCostWei,
-      })
-      .once("error", (err) => {
-        console.log(err);
-        setFeedback("Sorry, something went wrong please try again later.");
-        setClaimingNft(false);
-      })
-      .then((receipt) => {
-        console.log(receipt);
-        setFeedback(
-          `WOW, the ${CONFIG.NFT_NAME} is yours! go visit Opensea.io to view it.`
-        );
-        setClaimingNft(false);
-        dispatch(fetchData(blockchain.account));
-      });
+  // --- FUNGSI APPROVE (ETHERS.JS) ---
+  const handleApprove = async () => {
+    if (!blockchain.signer) {
+        setFeedback("Please connect your wallet first.");
+        return;
+    }
+    
+    if (!usdcAbi) {
+        setFeedback("Contract data is loading, please wait a moment.");
+        return;
+    }
+
+    setFeedback(`Approving ${CONFIG.DISPLAY_COST * mintAmount} USDC...`);
+    setIsApproving(true);
+
+    try {
+      const usdcContract = new ethers.Contract(
+        CONFIG.USDC_CONTRACT_ADDRESS,
+        usdcAbi, 
+        blockchain.signer
+      );
+
+      let cost = CONFIG.WEI_COST;
+      
+      // Kalkulasi BigNumber yang sudah benar
+      let totalCostWei = ethers.BigNumber.from(String(cost)).mul(mintAmount); 
+
+      const tx = await usdcContract.approve(
+        CONFIG.CONTRACT_ADDRESS, 
+        totalCostWei
+      );
+      
+      await tx.wait(); 
+
+      setFeedback("USDC Approved! Now you can mint.");
+      setIsApproving(false);
+      setApprovalStatus(true); 
+
+    } catch (err) {
+      console.error("Approval failed:", err);
+      setFeedback("Approval failed. Check console for details.");
+      setIsApproving(false);
+    }
   };
 
+  // --- FUNGSI MINT (ETHERS.JS) ---
+  const claimNFTs = async () => {
+    if (!blockchain.signer) {
+        setFeedback("Please connect your wallet first.");
+        return;
+    }
+
+    if (!nftAbi) {
+        setFeedback("Contract data is loading, please wait a moment.");
+        return;
+    }
+    
+    setFeedback(`Minting your ${CONFIG.NFT_NAME}...`);
+    setClaimingNft(true);
+
+    try {
+      const nftContract = new ethers.Contract(
+        CONFIG.CONTRACT_ADDRESS,
+        nftAbi,
+        blockchain.signer
+      );
+
+      const tx = await nftContract.mint(
+        blockchain.account, // _to address
+        mintAmount,        // _mintAmount
+        {
+          gasLimit: CONFIG.GAS_LIMIT,
+        }
+      );
+      
+      await tx.wait();
+
+      setFeedback(
+        `WOW, the ${CONFIG.NFT_NAME} is yours! Transaction: ${tx.hash}`
+      );
+      setClaimingNft(false);
+      dispatch(fetchData(blockchain.account));
+      setApprovalStatus(false);
+      setFeedback("Minting Success! Please approve for next mint.");
+
+    } catch (err) {
+      console.error("Minting failed:", err);
+      setFeedback("Sorry, something went wrong. Check console for details.");
+      setClaimingNft(false);
+    }
+  };
+  
   const decrementMintAmount = () => {
     let newMintAmount = mintAmount - 1;
     if (newMintAmount < 1) {
       newMintAmount = 1;
     }
-    setMintAmount(newMintAmount);
+    setMintAmount(newMintAmount); 
+    setFeedback("First, approve USDC to mint."); 
   };
 
+  // --- PERBAIKAN: BATAS SINKRON DENGAN KONTRAK ---
   const incrementMintAmount = () => {
     let newMintAmount = mintAmount + 1;
-    if (newMintAmount > 50) {
-      newMintAmount = 50;
+    if (newMintAmount > 20) { // <-- DIUBAH JADI 20
+      newMintAmount = 20;
     }
     setMintAmount(newMintAmount);
+    setFeedback("First, approve USDC to mint."); 
   };
 
   const getData = () => {
-    if (blockchain.account !== "" && blockchain.smartContract !== null) {
+    if (blockchain.account !== "" && blockchain.provider !== null) { 
       dispatch(fetchData(blockchain.account));
     }
   };
@@ -185,13 +276,34 @@ function App() {
     SET_CONFIG(config);
   };
 
+  const getAbis = async () => {
+    try {
+      const usdcAbiResponse = await fetch("/config/usdc_abi.json", {
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+      });
+      const usdcAbiData = await usdcAbiResponse.json();
+      setUsdcAbi(usdcAbiData);
+
+      const nftAbiResponse = await fetch("/config/abi.json", {
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+      });
+      const nftAbiData = await nftAbiResponse.json();
+      setNftAbi(nftAbiData);
+    } catch (err)
+ {
+      console.error("Failed to fetch ABIs:", err);
+      setFeedback("Error: Could not load contract data. Please refresh.");
+    }
+  };
+
   useEffect(() => {
     getConfig();
+    getAbis();
   }, []);
 
   useEffect(() => {
     getData();
-  }, [blockchain.account]);
+  }, [blockchain.account, blockchain.provider]); 
 
   return (
     <s.Screen>
@@ -217,12 +329,12 @@ function App() {
             style={{
               backgroundColor: "var(--accent)",
               padding: 24,
-              borderRadius: 24,
-              border: "4px dashed var(--secondary)",
-              boxShadow: "0px 5px 11px 2px rgba(0,0,0,0.7)",
+              borderRadius: 4, 
+              border: "4px solid var(--secondary)", 
+              boxShadow: "6px 6px 0px 0px rgba(0,0,0,0.4)", 
             }}
           >
-            <s.TextTitle
+            <GlitchTitle
               style={{
                 textAlign: "center",
                 fontSize: 50,
@@ -231,7 +343,7 @@ function App() {
               }}
             >
               {data.totalSupply} / {CONFIG.MAX_SUPPLY}
-            </s.TextTitle>
+            </GlitchTitle>
             <s.TextDescription
               style={{
                 textAlign: "center",
@@ -269,6 +381,7 @@ function App() {
               </StyledButton>
             </span>
             <s.SpacerSmall />
+            
             {Number(data.totalSupply) >= CONFIG.MAX_SUPPLY ? (
               <>
                 <s.TextTitle
@@ -292,17 +405,19 @@ function App() {
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
                   1 {CONFIG.SYMBOL} costs {CONFIG.DISPLAY_COST}{" "}
-                  {CONFIG.NETWORK.SYMBOL}.
+                  {CONFIG.NETWORK.SYMBOL}. 
                 </s.TextTitle>
                 <s.SpacerXSmall />
-                <s.TextDescription
+                
+                <FlickerText
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
                   Excluding gas fees.
-                </s.TextDescription>
+                </FlickerText>
+
                 <s.SpacerSmall />
                 {blockchain.account === "" ||
-                blockchain.smartContract === null ? (
+                !blockchain.signer ? (
                   <s.Container ai={"center"} jc={"center"}>
                     <s.TextDescription
                       style={{
@@ -317,7 +432,6 @@ function App() {
                       onClick={(e) => {
                         e.preventDefault();
                         dispatch(connect());
-                        getData();
                       }}
                     >
                       CONNECT
@@ -350,7 +464,7 @@ function App() {
                     <s.Container ai={"center"} jc={"center"} fd={"row"}>
                       <StyledRoundButton
                         style={{ lineHeight: 0.4 }}
-                        disabled={claimingNft ? 1 : 0}
+                        disabled={claimingNft || isApproving ? 1 : 0} 
                         onClick={(e) => {
                           e.preventDefault();
                           decrementMintAmount();
@@ -369,7 +483,7 @@ function App() {
                       </s.TextDescription>
                       <s.SpacerMedium />
                       <StyledRoundButton
-                        disabled={claimingNft ? 1 : 0}
+                        disabled={claimingNft || isApproving ? 1 : 0} 
                         onClick={(e) => {
                           e.preventDefault();
                           incrementMintAmount();
@@ -380,16 +494,31 @@ function App() {
                     </s.Container>
                     <s.SpacerSmall />
                     <s.Container ai={"center"} jc={"center"} fd={"row"}>
-                      <StyledButton
-                        disabled={claimingNft ? 1 : 0}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          claimNFTs();
-                          getData();
-                        }}
-                      >
-                        {claimingNft ? "BUSY" : "BUY"}
-                      </StyledButton>
+                      
+                      
+                      {!approvalStatus ? (
+                        <StyledButton
+                          disabled={isApproving ? 1 : 0}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleApprove();
+                          }}
+                        >
+                          {isApproving ? "APPROVING..." : "APPROVE USDC"}
+                        </StyledButton>
+                      ) : (
+                        <StyledButton
+                          disabled={claimingNft ? 1 : 0}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            claimNFTs();
+                            getData();
+                          }}
+                        >
+                          {claimingNft ? "MINTING..." : "MINT"}
+                        </StyledButton>
+                      )}
+                      
                     </s.Container>
                   </>
                 )}
@@ -429,6 +558,14 @@ function App() {
             successfully mint your NFT. We recommend that you don't lower the
             gas limit.
           </s.TextDescription>
+          
+          <s.SpacerMedium />
+          <s.SocialsContainer>
+            <StyledLink href="#" target="_blank">
+              X
+            </StyledLink>
+          </s.SocialsContainer>
+
         </s.Container>
       </s.Container>
     </s.Screen>

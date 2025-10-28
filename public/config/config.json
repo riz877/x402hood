@@ -1,18 +1,19 @@
 {
-  "CONTRACT_ADDRESS": "0x0b18b900F7375AABDa00EEaC988116C33fb05BD2",
-  "SCAN_LINK": "https://polygonscan.com/token/0x0b18b900F7375AABDa00EEaC988116C33fb05BD2",
+  "CONTRACT_ADDRESS": "0x0c01872B23d41722E29e3F3cab2078C6C74AF8dc", 
+  "USDC_CONTRACT_ADDRESS": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "SCAN_LINK": "https://sepolia.basescan.org",
   "NETWORK": {
-    "NAME": "Polygon",
-    "SYMBOL": "Matic",
-    "ID": 137
+    "NAME": "Base Sepolia",
+    "SYMBOL": "USDC",
+    "ID": 84532
   },
-  "NFT_NAME": "The Stripes NFT",
-  "SYMBOL": "TSNFT",
-  "MAX_SUPPLY": 992,
-  "WEI_COST": 4000000000000000000,
-  "DISPLAY_COST": 4,
-  "GAS_LIMIT": 285000,
-  "MARKETPLACE": "Opeansea",
-  "MARKETPLACE_LINK": "https://opensea.io/collection/the-stripes-nft",
+  "NFT_NAME": "x402HOOD",
+  "SYMBOL": "HOOD",
+  "MAX_SUPPLY": 4020,
+  "WEI_COST": 2000000,
+  "DISPLAY_COST": 2,
+  "GAS_LIMIT": 2800000, 
+  "MARKETPLACE": "Opensea (Testnet)",
+  "MARKETPLACE_LINK": "https://testnets.opensea.io/collection/X402HOOD",
   "SHOW_BACKGROUND": true
 }

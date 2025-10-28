@@ -1,6 +1,7 @@
 // constants
-import Web3EthContract from "web3-eth-contract";
-import Web3 from "web3";
+// HAPUS: import Web3EthContract from "web3-eth-contract";
+// HAPUS: import Web3 from "web3";
+import { ethers } from "ethers"; // IMPORT ethers
 // log
 import { fetchData } from "../data/dataActions";
 
@@ -34,6 +35,8 @@ const updateAccountRequest = (payload) => {
 export const connect = () => {
   return async (dispatch) => {
     dispatch(connectRequest());
+    
+    // Fetch ABI dan Config (Ini sudah benar)
     const abiResponse = await fetch("/config/abi.json", {
       headers: {
         "Content-Type": "application/json",
@@ -48,30 +51,45 @@ export const connect = () => {
       },
     });
     const CONFIG = await configResponse.json();
+    
     const { ethereum } = window;
     const metamaskIsInstalled = ethereum && ethereum.isMetaMask;
+    
     if (metamaskIsInstalled) {
-      Web3EthContract.setProvider(ethereum);
-      let web3 = new Web3(ethereum);
       try {
-        const accounts = await ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        const networkId = await ethereum.request({
-          method: "net_version",
-        });
-        if (networkId == CONFIG.NETWORK.ID) {
-          const SmartContractObj = new Web3EthContract(
+        // --- AWAL PERUBAHAN KE Ethers ---
+        
+        // 1. Buat Provider Ethers
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        
+        // 2. Minta akun
+        const accounts = await provider.send("eth_requestAccounts", []);
+        
+        // 3. Dapatkan Signer (Ini yang dibutuhkan App.js)
+        const signer = provider.getSigner();
+        
+        // 4. Dapatkan Network ID
+        const network = await provider.getNetwork();
+
+        if (network.chainId == CONFIG.NETWORK.ID) {
+          // 5. Buat Ethers Contract (Read-only, untuk dataActions)
+          const smartContract = new ethers.Contract(
+            CONFIG.CONTRACT_ADDRESS,
             abi,
-            CONFIG.CONTRACT_ADDRESS
+            provider // Cukup provider untuk read-only
           );
+          
           dispatch(
             connectSuccess({
               account: accounts[0],
-              smartContract: SmartContractObj,
-              web3: web3,
+              provider: provider, // Kirim provider Ethers
+              signer: signer,     // Kirim signer Ethers (PENTING!)
+              smartContract: smartContract, // Kirim contract Ethers
+              web3: null, // web3 tidak dipakai lagi
             })
           );
+          // --- AKHIR PERUBAHAN KE Ethers ---
+
           // Add listeners start
           ethereum.on("accountsChanged", (accounts) => {
             dispatch(updateAccount(accounts[0]));
@@ -84,6 +102,7 @@ export const connect = () => {
           dispatch(connectFailed(`Change network to ${CONFIG.NETWORK.NAME}.`));
         }
       } catch (err) {
+        console.error("Connection error:", err);
         dispatch(connectFailed("Something went wrong."));
       }
     } else {
@@ -95,6 +114,6 @@ export const connect = () => {
 export const updateAccount = (account) => {
   return async (dispatch) => {
     dispatch(updateAccountRequest({ account: account }));
-    dispatch(fetchData(account));
+    dispatch(fetchData()); // Cukup panggil fetchData, tak perlu kirim akun
   };
 };

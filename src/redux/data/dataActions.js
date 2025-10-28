@@ -25,21 +25,27 @@ export const fetchData = () => {
   return async (dispatch) => {
     dispatch(fetchDataRequest());
     try {
-      let totalSupply = await store
-        .getState()
-        .blockchain.smartContract.methods.totalSupply()
-        .call();
-      // let cost = await store
-      //   .getState()
-      //   .blockchain.smartContract.methods.cost()
-      //   .call();
+      // Ambil contract Ethers dari state
+      const smartContract = store.getState().blockchain.smartContract;
 
-      dispatch(
-        fetchDataSuccess({
-          totalSupply,
-          // cost,
-        })
-      );
+      // PENTING: Cek apakah smartContract sudah ada
+      if (smartContract) {
+        // --- AWAL PERUBAHAN KE Ethers ---
+        
+        // Gunakan sintaks Ethers (langsung panggil fungsi)
+        let totalSupply = await smartContract.totalSupply();
+        
+        // --- AKHIR PERUBAHAN KE Ethers ---
+
+        dispatch(
+          fetchDataSuccess({
+            totalSupply: totalSupply.toString(), // Konversi BigNumber ke string
+          })
+        );
+      } else {
+        // Ini terjadi jika fetchData dipanggil sebelum connect selesai
+        dispatch(fetchDataFailed("Contract not ready."));
+      }
     } catch (err) {
       console.log(err);
       dispatch(fetchDataFailed("Could not load data from contract."));

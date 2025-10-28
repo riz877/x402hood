@@ -1,25 +1,26 @@
 {
-  "name": "the_stripes_nft_dapp",
+  "name": "x402hood",
   "version": "1.0.0",
-  "description": "The Stripes NFT minting dapp is a quick and easy way to connect your smart contract and start minting NFTs.",
+  "description": "X402HOOD",
   "private": true,
   "dependencies": {
+    "ethers": "^5.8.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.3.0",
-    "web-vitals": "^1.0.1",
-    "web3": "^1.5.1",
-    "web3-eth-contract": "^1.5.2"
+    "web-vitals": "^1.0.1"
   },
   "author": "Ali Solanki, Daniel Eugene Botha",
   "license": "MIT",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
@@ -34,6 +35,21 @@
     ]
   },
   "engines": {
-    "node": "16.x"
+    "node": ">=16.x"
+  },
+  "devDependencies": {
+    "ajv": "^8.12.0",
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "process": "^0.11.10",
+    "react-app-rewired": "^2.2.1",
+    "react-is": "^18.2.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.0"
   }
 }

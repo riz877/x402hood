@@ -1,3 +1,16 @@
+/* DIUBAH: Menambahkan variabel :root untuk tema matrix 8-bit */
+:root {
+  --primary: #000000; /* Latar belakang hitam */
+  --secondary: #ffffff; /* Hijau neon untuk tombol/link */
+  --accent: #RRGGBBAA; /* Hijau sangat gelap untuk kontainer */
+  --primary-text: #ffffff; /* Teks hijau neon */
+  --secondary-text: #000000; /* Teks hitam (di atas tombol hijau) */
+  --accent-text: #ffffff; /* Teks hijau neon (di atas kontainer gelap) */
+
+  /* Efek glow untuk teks */
+  --matrix-glow: 0 0 3px #000000, 0 0 5px #ffffff;
+}
+
 html,
 body,
 div,
@@ -125,15 +138,21 @@ table {
 
 @font-face {
   font-family: "coder";
-  src: local("coder"), url(font.woff) format("woff");
+  src: local("coder"), url(Minecraft.ttf) format("truetype");
 }
 
 body {
   margin: 0;
-  font-family: "coder", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
+  /* DIUBAH: Memaksa font pixel dan monospace, menghapus font sans-serif */
+  font-family: "coder", "Courier New", Courier, monospace;
+  /* DIUBAH: Menghapus anti-aliasing agar font terlihat kotak-kotak (pixelated) */
+  -webkit-font-smoothing: none;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed; /* Optimasi untuk font pixel */
+  
+  /* DIUBAH: Menerapkan warna dasar matrix dari :root */
+  background-color: var(--primary);
+  color: var(--primary-text);
 }
 
 * {
@@ -143,8 +162,8 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  /* DIUBAH: Menyesuaikan font code agar konsisten */
+  font-family: "coder", "Courier New", Courier, monospace;
 }
 
 body::-webkit-scrollbar {
@@ -157,7 +176,8 @@ body {
 }
 
 html {
-  background-color: "#4C4C4C";
+  /* DIUBAH: Menggunakan variabel dari :root */
+  background-color: var(--primary);
 }
 
 div {
@@ -166,4 +186,52 @@ div {
   -ms-user-select: none;
   user-select: none;
   -o-user-select: none;
+}
+
+/* DIUBAH: Menambahkan aturan render gambar agar terlihat pixelated */
+img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* DIUBAH: Menambahkan keyframes untuk animasi glitch */
+@keyframes glitch {
+  0%, 15%, 100% { /* Lebih banyak diam */
+    transform: translate(0);
+    text-shadow: var(--matrix-glow);
+  }
+  15.5% {
+    transform: translate(-4px, 1px);
+    /* Glitch warna magenta/cyan */
+    text-shadow: -2px 0 3px #ff00ff, 2px 0 3px #00ffff;
+  }
+  16% {
+    transform: translate(3px, -2px);
+    text-shadow: -2px 0 3px #ff00ff, 2px 0 3px #00ffff;
+  }
+  16.5% {
+    transform: translate(0);
+    text-shadow: var(--matrix-glow);
+  }
+}
+
+/* DIUBAH: Keyframes baru untuk teks berkedip ala terminal */
+@keyframes flicker {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: var(--matrix-glow);
+  }
+  50% {
+    opacity: 0.6;
+    text-shadow: none; /* Hilangkan glow saat redup */
+  }
+}
+
+/* DIUBAH: Keyframes baru untuk efek flicker monitor CRT */
+@keyframes crtFlicker {
+  0%, 100% { opacity: 0.6; }
+  49% { opacity: 0.6; }
+  50% { opacity: 0.4; } /* Redup sekejap */
+  51% { opacity: 0.6; }
 }

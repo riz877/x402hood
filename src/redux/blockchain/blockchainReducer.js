@@ -1,8 +1,11 @@
+// --- PERUBAHAN: Tambahkan provider dan signer, hapus web3 ---
 const initialState = {
   loading: false,
   account: null,
   smartContract: null,
-  web3: null,
+  provider: null, // BARU
+  signer: null,     // BARU
+  // web3: null,    // HAPUS
   errorMsg: "",
 };
 
@@ -19,7 +22,10 @@ const blockchainReducer = (state = initialState, action) => {
         loading: false,
         account: action.payload.account,
         smartContract: action.payload.smartContract,
-        web3: action.payload.web3,
+        // --- PERUBAHAN: Simpan provider dan signer ---
+        provider: action.payload.provider, // BARU
+        signer: action.payload.signer,       // BARU
+        // web3: action.payload.web3,       // HAPUS
       };
     case "CONNECTION_FAILED":
       return {
