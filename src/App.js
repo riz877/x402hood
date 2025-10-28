@@ -151,7 +151,7 @@ function App() {
   // =================================================================
   // ===  ===
   // =================================================================
-  const API_URL = "https://my-x402-backend-api.netlify.app/.netlify/functions/resource";
+  const API_URL = "/api";
 
   const handleApiClick = async () => {
     setFeedback("Contacting API..."); // 
