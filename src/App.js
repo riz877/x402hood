@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 const truncate = (input, len) =>
   input.length > len ? `${input.substring(0, len)}...` : input;
 
-// --- DEFINISI STYLE COMPONENTS (LENGKAP) ---
+// ---  ---
 export const StyledButton = styled.button`
   padding: 10px;
   border-radius: 4px; 
@@ -112,7 +112,7 @@ const GlitchTitle = styled(s.TextTitle)`
 const FlickerText = styled(s.TextDescription)`
   animation: flicker 2s infinite steps(1) alternate;
 `;
-// --- AKHIR DEFINISI STYLE COMPONENTS ---
+// ---  ---
 
 
 function App() {
@@ -148,7 +148,39 @@ function App() {
     SHOW_BACKGROUND: false,
   });
 
-  // --- FUNGSI APPROVE (ETHERS.JS) ---
+  // =================================================================
+  // ===  ===
+  // =================================================================
+  const API_URL = "https://my-x402-backend-api.netlify.app/.netlify/functions/resource";
+
+  const handleApiClick = async () => {
+    setFeedback("Contacting API..."); // 
+    
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json(); // 
+
+      if (response.status === 402) {
+        // 
+        console.log("Payment Required:", data.error);
+        setFeedback(`API Error: ${data.error}`); // 
+      } else {
+        // 
+        console.log("API Response:", data);
+        setFeedback("Unexpected API response.");
+      }
+
+    } catch (err) {
+      console.error("Failed to fetch API:", err);
+      setFeedback("Error connecting to API.");
+    }
+  };
+  // =================================================================
+  // ===  ===
+  // =================================================================
+
+
+  // ---  (ETHERS.JS) ---
   const handleApprove = async () => {
     if (!blockchain.signer) {
         setFeedback("Please connect your wallet first.");
@@ -172,7 +204,7 @@ function App() {
 
       let cost = CONFIG.WEI_COST;
       
-      // Kalkulasi BigNumber yang sudah benar
+      // 
       let totalCostWei = ethers.BigNumber.from(String(cost)).mul(mintAmount); 
 
       const tx = await usdcContract.approve(
@@ -193,7 +225,7 @@ function App() {
     }
   };
 
-  // --- FUNGSI MINT (ETHERS.JS) ---
+  // ---  (ETHERS.JS) ---
   const claimNFTs = async () => {
     if (!blockchain.signer) {
         setFeedback("Please connect your wallet first.");
@@ -359,16 +391,20 @@ function App() {
                 textAlign: "center",
               }}
             >
+              {/* ================================================================= */}
+              {/* ===  === */}
+              {/* ================================================================= */}
               <StyledButton
-                onClick={(e) => {
-                  window.open("#", "_blank");
-                }}
+                onClick={handleApiClick}
                 style={{
                   margin: "5px",
                 }}
               >
                 x402 API
               </StyledButton>
+              {/* ================================================================= */}
+              {/* ===  === */}
+              {/* ================================================================= */}
               <StyledButton
                 style={{
                   margin: "5px",
