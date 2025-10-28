@@ -1,4 +1,4 @@
 [[redirects]]
   from = "/api"
-  to = "https://x402hood.netlify.app/.netlify/functions/resource"
+  to = "https://mint.x402hood.xyz/.netlify/functions/resource"
   status = 200
