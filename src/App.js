@@ -249,10 +249,10 @@ function App() {
     setFeedback("First, approve USDC to mint."); 
   };
 
-  // --- PERBAIKAN: BATAS SINKRON DENGAN KONTRAK ---
+ 
   const incrementMintAmount = () => {
     let newMintAmount = mintAmount + 1;
-    if (newMintAmount > 20) { // <-- DIUBAH JADI 20
+    if (newMintAmount > 20) { // 
       newMintAmount = 20;
     }
     setMintAmount(newMintAmount);
@@ -361,13 +361,13 @@ function App() {
             >
               <StyledButton
                 onClick={(e) => {
-                  window.open("/config/roadmap.pdf", "_blank");
+                  window.open("#", "_blank");
                 }}
                 style={{
                   margin: "5px",
                 }}
               >
-                Roadmap
+                x402 API
               </StyledButton>
               <StyledButton
                 style={{

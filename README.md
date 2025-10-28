@@ -87,7 +87,7 @@ Next change the theme colors to your liking in the `public/config/theme.css` fil
 }
 ```
 
-Now you will need to create and change the `public/favicon.ico`, `public/logo192.png`, and
+Now you will need to create and change the `public/logo192.png`, `public/logo192.png`, and
 `public/logo512.png` to your brand images.
 
 Remember to update the title and description the `public/index.html` file
