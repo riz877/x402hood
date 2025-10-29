@@ -1,9 +1,9 @@
 {
   "CONTRACT_ADDRESS": "0x0c01872B23d41722E29e3F3cab2078C6C74AF8dc", 
-  "USDC_CONTRACT_ADDRESS": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-  "SCAN_LINK": "https://sepolia.basescan.org",
+  "USDC_CONTRACT_ADDRESS": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+  "SCAN_LINK": "https://basescan.org",
   "NETWORK": {
-    "NAME": "Base Sepolia",
+    "NAME": "Base",
     "SYMBOL": "USDC",
     "ID": 84532
   },
@@ -13,7 +13,7 @@
   "WEI_COST": 2000000,
   "DISPLAY_COST": 2,
   "GAS_LIMIT": 2800000, 
-  "MARKETPLACE": "Opensea (Testnet)",
-  "MARKETPLACE_LINK": "https://testnets.opensea.io/collection/X402HOOD",
+  "MARKETPLACE": "Opensea",
+  "MARKETPLACE_LINK": "https://opensea.io",
   "SHOW_BACKGROUND": true
 }
