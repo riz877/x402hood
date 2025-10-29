@@ -1,11 +1,17 @@
-# Proxy untuk resource /lucky
+# 
 [[redirects]]
   from = "/lucky"
   to = "https://mint.x402hood.xyz/.netlify/functions/lucky"
   status = 200
 
-# Proxy untuk resource /mint
+# 
 [[redirects]]
   from = "/mint"
   to = "https://mint.x402hood.xyz/.netlify/functions/mint"
+  status = 200
+
+  # 
+[[redirects]]
+  from = "/mint"
+  to = "https://mint.x402hood.xyz/.netlify/functions/resource"
   status = 200
