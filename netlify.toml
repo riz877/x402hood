@@ -15,3 +15,9 @@
   from = "/mint"
   to = "https://mint.x402hood.xyz/.netlify/functions/resource"
   status = 200
+
+  # 
+[[redirects]]
+  from = "/mint"
+  to = "https://mint.x402hood.xyz/.netlify/functions/agent"
+  status = 200
