@@ -284,8 +284,8 @@ function App() {
  
   const incrementMintAmount = () => {
     let newMintAmount = mintAmount + 1;
-    if (newMintAmount > 20) { // 
-      newMintAmount = 20;
+    if (newMintAmount > 100) { // 
+      newMintAmount = 100;
     }
     setMintAmount(newMintAmount);
     setFeedback("First, approve USDC to mint."); 
