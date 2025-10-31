@@ -4,15 +4,19 @@
   "description": "X402HOOD",
   "private": true,
   "dependencies": {
+    "@coinbase/x402": "^0.7.1",
     "ethers": "^5.8.0",
+    "express": "^5.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
     "react-scripts": "^5.0.1",
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0",
+    "serverless-http": "^4.0.0",
     "styled-components": "^5.3.0",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "x402-express": "^0.7.1"
   },
   "author": "Ali Solanki, Daniel Eugene Botha",
   "license": "MIT",
